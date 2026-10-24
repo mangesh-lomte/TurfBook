@@ -1,0 +1,85 @@
+name: TurfBook CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  backend-test:
+    name: Backend Build & Concurrency Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: turfbook_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'server/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Run Prisma Migrations
+        working-directory: server
+        env:
+          DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/turfbook_ci?schema=public
+        run: |
+          npx prisma migrate deploy
+          npx tsx prisma/seed.ts
+
+      - name: Run Vitest Suite (Unit, Concurrency & Integration)
+        working-directory: server
+        env:
+          DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/turfbook_ci?schema=public
+          JWT_ACCESS_SECRET: ci-jwt-access-secret-32charactersmin!
+          JWT_REFRESH_SECRET: ci-jwt-refresh-secret-32charactersmin!
+        run: npm test
+
+      - name: Build Backend Production Bundle
+        working-directory: server
+        run: npm run build
+
+  frontend-build:
+    name: Frontend Build & Typecheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'client/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Build Client Production Bundle
+        working-directory: client
+        run: npm run build

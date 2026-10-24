@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: turfbook-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: turfbook
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d turfbook']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - turfbook-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: turfbook-server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://postgres:postgrespassword@db:5432/turfbook?schema=public
+      JWT_ACCESS_SECRET: turfbook-prod-access-secret-32charslong!
+      JWT_REFRESH_SECRET: turfbook-prod-refresh-secret-32charslong!
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - '5000:5000'
+    networks:
+      - turfbook-network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: turfbook-client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - '5173:80'
+    networks:
+      - turfbook-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  turfbook-network:
+    driver: bridge

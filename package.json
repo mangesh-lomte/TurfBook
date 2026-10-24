@@ -1,0 +1,30 @@
+{
+  "name": "turfbook",
+  "version": "1.0.0",
+  "description": "TurfBook — Sports Turf Booking & Management Platform",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev": "npm run dev:server",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "build": "npm run build:server && npm run build:client",
+    "test": "npm --prefix server run test",
+    "seed": "npm --prefix server run prisma:seed",
+    "migrate": "npm --prefix server run prisma:migrate"
+  },
+  "keywords": [
+    "turf-booking",
+    "sports",
+    "postgresql",
+    "prisma",
+    "react",
+    "express",
+    "typescript",
+    "concurrency",
+    "gist-exclusion"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT"
+}
