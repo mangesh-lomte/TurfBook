@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const createBookingSchema = z.object({
   groundId: z.string().uuid('Valid ground ID is required'),
+  slotId: z.string().optional(),
   startTime: z.string().datetime({ message: 'Valid ISO startTime is required' }),
   endTime: z.string().datetime({ message: 'Valid ISO endTime is required' }),
   notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),

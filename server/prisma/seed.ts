@@ -161,9 +161,9 @@ async function main() {
       contactEmail: 'contact@greenfieldsports.in',
       facilities: ['Floodlights', 'Changing Rooms', 'Showers', 'Cafeteria', 'Ample Parking', 'First Aid', 'Drinking Water'],
       images: [
-        'https://images.unsplash.com/photo-1529900248061-5652ab58877f?w=800',
-        'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800',
-        'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
+        'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80',
       ],
       status: VenueStatus.APPROVED,
       isFeatured: true,
@@ -225,8 +225,9 @@ async function main() {
       contactEmail: 'hello@apexturf.com',
       facilities: ['Indoor AC Courts', 'Locker Rooms', 'Pro Equipment Rental', 'Cafe', 'WiFi', 'Valet Parking'],
       images: [
-        'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800',
-        'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800',
+        'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1200&q=80',
       ],
       status: VenueStatus.APPROVED,
       isFeatured: true,
@@ -288,8 +289,9 @@ async function main() {
       contactEmail: 'book@thunderboltarena.com',
       facilities: ['Floodlights', 'Washrooms', 'Sports Lounge', 'Coaching Available', 'Spectator Seating'],
       images: [
-        'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800',
-        'https://images.unsplash.com/photo-1505666287802-931dc83948e9?w=800',
+        'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1200&q=80',
       ],
       status: VenueStatus.APPROVED,
       isFeatured: false,
@@ -333,7 +335,10 @@ async function main() {
       contactPhone: '+91 9999988888',
       contactEmail: 'champions@den.com',
       facilities: ['Floodlights', 'Parking', 'Beverages'],
-      images: ['https://images.unsplash.com/photo-1518604667503-4672e1314dd6?w=800'],
+      images: [
+        'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?auto=format&fit=crop&w=1200&q=80',
+      ],
       status: VenueStatus.PENDING,
     },
   });
@@ -359,9 +364,9 @@ async function main() {
   // Booking 1: Past completed booking
   const pastStart = new Date();
   pastStart.setDate(pastStart.getDate() - 3);
-  pastStart.setHours(18, 0, 0, 0);
+  pastStart.setUTCHours(18, 0, 0, 0);
   const pastEnd = new Date(pastStart);
-  pastEnd.setHours(19, 0, 0, 0);
+  pastEnd.setUTCHours(19, 0, 0, 0);
 
   const pastBooking = await prisma.booking.create({
     data: {
@@ -406,9 +411,9 @@ async function main() {
   // Booking 2: Upcoming confirmed booking
   const futureStart = new Date();
   futureStart.setDate(futureStart.getDate() + 2);
-  futureStart.setHours(19, 0, 0, 0);
+  futureStart.setUTCHours(19, 0, 0, 0);
   const futureEnd = new Date(futureStart);
-  futureEnd.setHours(20, 0, 0, 0);
+  futureEnd.setUTCHours(20, 0, 0, 0);
 
   const futureBooking = await prisma.booking.create({
     data: {

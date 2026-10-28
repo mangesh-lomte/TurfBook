@@ -48,11 +48,18 @@ export class PaymentController {
 
   async simulatePaymentResult(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      if (!req.user) {
+        res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        return;
+      }
+
       const id = req.params.id as string;
       const { result, failureReason } = req.body;
 
       const payment = await paymentService.simulatePaymentResult(
         id,
+        req.user.userId,
+        req.user.role,
         result === 'FAILED' ? 'FAILED' : 'SUCCESS',
         failureReason
       );

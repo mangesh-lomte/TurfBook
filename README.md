@@ -1,25 +1,28 @@
 # TurfBook — Sports Turf Booking & Management Platform
 
-[![TurfBook CI](https://github.com/turfbook/turfbook/actions/workflows/ci.yml/badge.svg)](https://github.com/turfbook/turfbook)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://www.postgresql.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.22-2D3748?logo=prisma)](https://www.prisma.io/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
+[![Three.js](https://img.shields.io/badge/Three.js-WebGL_3D-black?logo=three.js)](https://threejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?logo=vite)](https://vitejs.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.12-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 
-**TurfBook** is an enterprise-grade, interview-ready full-stack sports venue discovery and booking SaaS platform. Customers can explore verified sports arenas (football turfs, box cricket arenas, badminton courts), view real-time hourly slot availability, and book grounds instantly. Turf owners manage facilities, ground operating schedules, and reservations, while platform administrators oversee venue verification and security audit trails.
+**TurfBook** is an enterprise-grade full-stack sports venue discovery and booking SaaS platform. Customers can explore verified sports arenas (football astroturfs, box cricket arenas, FIBA basketball courts), inspect real-time hourly slot availability, interact with a cinematic 3D sports complex, and reserve grounds with zero chance of double bookings. Turf owners manage venue profiles, ground configurations, and reservations, while platform administrators oversee venue approvals and audit trails.
 
 ---
 
 ## 🌟 Key Engineering Highlights
 
-- **Database-Backed Atomic Concurrency Protection**: Zero double bookings guaranteed at the database engine level via PostgreSQL `btree_gist` GiST exclusion constraints (`tsrange` non-overlapping active intervals) combined with serializable transactions.
+- **Database-Level Atomic Concurrency Protection**: Zero double bookings guaranteed at the PostgreSQL engine level via `btree_gist` GiST exclusion constraints (`tsrange` non-overlapping active intervals) combined with serializable transactions.
+- **Cinematic 3D Interactive Sports Complex**: Custom Three.js WebGL architectural campus with FIFA-regulation football pitch, enclosed box cricket truss cage, and FIBA cushioned acrylic basketball court featuring real-time floodlighting, exponential camera damping, and day/night toggles.
+- **Python Diagnostics & Analytics Microservice**: Dedicated FastAPI microservice providing pricing intelligence, operational analytics, and system diagnostics.
+- **Sports Photography & High-Fidelity Asset Pipeline**: Sport-matched realistic photography pipeline with automatic fallback handling, 16:10 aspect ratio normalization, and subtle vignette gradients.
 - **Authoritative Server Pricing**: The backend strictly computes duration, rates, discounts, and taxes from the PostgreSQL ground rate. Clients cannot tamper with pricing, duration, or booking status.
-- **Role-Based Authorization & Security**: Three dedicated roles (`CUSTOMER`, `OWNER`, `ADMIN`) enforced via JWT access tokens and HttpOnly refresh token rotation sessions.
-- **Real-Time Dynamic Slot Engine**: Computes slot states (`AVAILABLE`, `BOOKED`, `BLOCKED`, `PAST`) on demand by querying ground operating hours against active bookings and owner maintenance periods.
+- **Role-Based Authorization & Security (RBAC)**: Three dedicated roles (`CUSTOMER`, `OWNER`, `ADMIN`) enforced via JWT access tokens and HttpOnly refresh token rotation sessions.
+- **Real-Time Dynamic Slot Matrix**: Computes slot states (`AVAILABLE`, `BOOKED`, `BLOCKED`, `PAST`) on demand by querying ground operating hours against active bookings and owner maintenance periods.
 - **1-Click Demo Persona Switcher**: Evaluators can instantly switch between Customer, Owner, and Admin personas with a single click from the UI navbar without typing passwords.
-- **Comprehensive Automated Tests**: Vitest integration test suite covering unit pricing calculations, authentication flows, error handlers, and simultaneous concurrent race conditions.
+- **Comprehensive Automated Test Suite**: 31 Vitest integration tests covering pricing calculations, authentication flows, error handlers, booking time integrity, and simultaneous concurrent race conditions.
 
 ---
 
@@ -27,8 +30,9 @@
 
 ```mermaid
 graph TD
-    Client["React 18 + TypeScript + Vite<br/>(Tailwind CSS, TanStack Query)"]
+    Client["React 18 + TypeScript + Vite<br/>(Tailwind CSS, TanStack Query, Three.js)"]
     API["Express.js REST API v1<br/>(Node.js + TypeScript)"]
+    PyService["Python Diagnostics & Analytics<br/>(FastAPI + Uvicorn)"]
     Prisma["Prisma ORM 5.22<br/>(Type-safe Query Engine)"]
     PG[("PostgreSQL 16 Engine<br/>btree_gist Exclusion Constraints")]
     Swagger["OpenAPI 3.0 Swagger UI<br/>(/api-docs)"]
@@ -40,6 +44,7 @@ graph TD
     PG -->|Atomic Exclusion Violation 23P01| Prisma
     Prisma -->|HTTP 409 Conflict| API
     API -->|Slot Collision Response| Client
+    API -.->|Analytics / Pricing Checks| PyService
 ```
 
 ---
@@ -74,11 +79,10 @@ erDiagram
 
 ## 🔒 The Booking Concurrency Strategy
 
-Preventing double booking when multiple users attempt to reserve the same turf slot at the exact same millisecond is the central architectural requirement of TurfBook.
+Preventing double bookings when multiple users attempt to reserve the same turf slot at the exact same millisecond is the central architectural guarantee of TurfBook.
 
 ### Why Application-Level Checks Fail
-Standard web applications perform a `SELECT ... WHERE startTime < requestedEnd AND endTime > requestedStart`. If no record is returned, they execute `INSERT INTO bookings ...`. 
-Under concurrent traffic, two simultaneous requests can both execute the `SELECT` query before either executes the `INSERT`, leading to **double bookings**.
+Standard web applications perform a `SELECT ... WHERE startTime < requestedEnd AND endTime > requestedStart`. If no record is returned, they execute `INSERT INTO bookings ...`. Under concurrent traffic, two simultaneous requests can both execute the `SELECT` query before either executes the `INSERT`, resulting in **double bookings**.
 
 ### The TurfBook Solution: PostgreSQL GiST Range Exclusion Constraint
 
@@ -101,7 +105,7 @@ WHERE (status IN ('CONFIRMED', 'PENDING_PAYMENT'));
 1. When a booking request arrives, `booking.service.ts` wraps the operation inside a serializable Prisma transaction (`prisma.$transaction(..., { isolationLevel: 'Serializable' })`).
 2. Even if concurrent threads race past application pre-checks, the PostgreSQL engine evaluates the GiST exclusion constraint on the `(ground_id, tsrange)` index.
 3. PostgreSQL allows exactly **one** transaction to commit. The conflicting transaction is immediately aborted by PostgreSQL with error code `23P01` (`exclusion_violation`).
-4. Our centralized error handler intercepts this error code and translates it into a clean, informative HTTP `409 Conflict`:
+4. Our centralized error handler intercepts this error code and translates it into a clean HTTP `409 Conflict`:
    ```json
    {
      "success": false,
@@ -117,7 +121,7 @@ WHERE (status IN ('CONFIRMED', 'PENDING_PAYMENT'));
 
 ## 👥 Seeded Demo Credentials
 
-For technical interviews and quick evaluation, pre-seeded accounts with realistic data are ready:
+For technical evaluation and testing, pre-seeded accounts with realistic data are ready:
 
 | Role | Email | Password | Pre-seeded Resources |
 |---|---|---|---|
@@ -126,7 +130,7 @@ For technical interviews and quick evaluation, pre-seeded accounts with realisti
 | **Turf Owner 2** | `owner2@turfbook.com` | `Owner@123456` | Apex Turf & Sports Complex (Bengaluru), Champions Den (Pending) |
 | **Customer** | `customer@turfbook.com` | `Customer@123456` | Upcoming & past bookings, match receipts, verified reviews |
 
-> **Pro Tip**: In the UI, click the **"Demo Logins"** button in the top navigation bar to switch personas in 1-click without typing credentials!
+> **Pro Tip**: In the UI, click the **"Demo Logins"** dropdown in the top navigation bar to switch personas in 1-click without typing credentials!
 
 ---
 
@@ -135,18 +139,24 @@ For technical interviews and quick evaluation, pre-seeded accounts with realisti
 ### Prerequisites
 - **Node.js**: v20 or v24+
 - **PostgreSQL**: 15 or 16+ running locally on port 5432
+- **Python**: 3.10+ (for analytics microservice)
 - **npm**: 10+
 
-### Option A: Local Native Setup (Recommended)
+### Local Native Setup
 
 #### 1. Clone & Install Dependencies
 ```bash
-# In the turfbook workspace root:
+git clone https://github.com/mangesh-lomte/TurfBook.git
+cd TurfBook
 npm run install:all
 ```
 
 #### 2. Configure Environment Files
-Create `server/.env` (or copy from `server/.env.example`):
+Copy the template to create `server/.env`:
+```bash
+cp server/.env.example server/.env
+```
+Ensure `DATABASE_URL` matches your local PostgreSQL credentials:
 ```env
 PORT=5000
 NODE_ENV=development
@@ -164,34 +174,34 @@ CORS_ORIGIN="http://localhost:5173"
 # Run Prisma migrations to create schema and GiST exclusion constraints:
 npm run migrate
 
-# Populate database with realistic sports, venues, grounds, and demo users:
+# Populate database with sports, venues, grounds, and demo accounts:
 npm run seed
 ```
 
-#### 4. Run Automated Test Suite
+#### 4. Run Automated Tests
 ```bash
 npm test
 ```
-*Executes unit pricing tests, authentication tests, and the simultaneous PostgreSQL concurrency race condition test.*
+*Executes all 31 backend integration tests covering booking time integrity, RBAC, pricing calculations, authentication flows, and simultaneous PostgreSQL concurrency race conditions.*
 
-#### 5. Start Development Servers
-In terminal 1 (Backend API):
+#### 5. Start Development Services
+Run the full stack concurrently:
 ```bash
+# Terminal 1: Express Backend API (Port 5000)
 npm run dev:server
-# Server running at: http://localhost:5000
-# Swagger API docs: http://localhost:5000/api-docs
-# Health check:     http://localhost:5000/health
+
+# Terminal 2: Vite React Frontend (Port 5173)
+npm run dev:client
+
+# Terminal 3: Python Analytics Service (Port 8000)
+npm run py:dev
 ```
 
-In terminal 2 (Frontend Client):
-```bash
-npm run dev:client
-# Frontend running at: http://localhost:5173
-```
+Open [`http://localhost:5173`](http://localhost:5173) in your browser.
 
 ---
 
-### Option B: Docker Compose Setup
+### Docker Compose Setup
 
 TurfBook includes complete multi-stage containerization for PostgreSQL, Express backend, and Nginx-powered React frontend:
 
@@ -206,7 +216,7 @@ docker compose up --build
 
 ## 📡 REST API Reference Summary
 
-All primary endpoints are versioned under `/api/v1`:
+All primary API endpoints are versioned under `/api/v1`:
 
 ### Authentication (`/api/v1/auth`)
 - `POST /register`: Register customer or turf owner account
@@ -232,7 +242,7 @@ All primary endpoints are versioned under `/api/v1`:
 - `DELETE /api/v1/blocked-periods/:id`: Release maintenance block
 
 ### Bookings (`/api/v1/bookings`)
-- `POST /`: Atomically reserve time slot (Protected with GiST constraint)
+- `POST /`: Atomically reserve time slot (Protected with GiST exclusion constraint)
 - `GET /my`: Customer match reservation history
 - `GET /:id`: Booking receipt details
 - `POST /:id/cancel`: Cancel eligible booking & release slot back to pool
@@ -259,15 +269,13 @@ Visit `http://localhost:5000/api-docs` in your browser for interactive Swagger t
 
 ## 🧪 Automated Testing Verification
 
-The test suite runs against PostgreSQL and validates:
+The integration test suite runs against PostgreSQL and validates:
 - **Pricing Calculation Unit Tests**: Correct subtotal, discounts, hourly rates, and tax rounding.
 - **Authentication Integration Tests**: Rejection of weak passwords, successful login, incorrect password handling, and protected `/me` profile retrieval.
-- **Booking Engine & Concurrency Tests**:
-  - Rejection of bookings in the past (HTTP 400).
-  - Successful booking of future available slots (HTTP 201).
-  - Rejection of overlapping booking attempts for the same slot (HTTP 409).
-  - **Simultaneous Race Condition Test**: Two conflicting requests dispatched at the exact same millisecond; verifies that exactly **one** succeeds (201) and the other is aborted by the PostgreSQL GiST exclusion constraint (409) with only 1 record created in the database.
-  - Cancellation restores slot availability, allowing immediate re-booking.
+- **Security & RBAC Tests**: Role access control across Customer, Owner, and Admin boundaries.
+- **Booking Time Integrity Tests**: Exact preservation of booking start and end timestamps (e.g. 19:00–20:00 stays 19:00–20:00).
+- **Concurrency & Race Condition Tests**: Conflicting simultaneous requests dispatched at the exact same millisecond; verifies that exactly **one** succeeds (201) and the other is aborted by the PostgreSQL GiST exclusion constraint (409).
+- **Cancellation Flow**: Cancellation restores slot availability, allowing immediate re-booking.
 
 ---
 

@@ -61,7 +61,13 @@ export class PaymentService {
     });
   }
 
-  async simulatePaymentResult(paymentId: string, result: 'SUCCESS' | 'FAILED', failureReason?: string) {
+  async simulatePaymentResult(
+    paymentId: string,
+    userId: string,
+    userRole: Role,
+    result: 'SUCCESS' | 'FAILED',
+    failureReason?: string
+  ) {
     const payment = await prisma.payment.findUnique({
       where: { id: paymentId },
       include: { booking: true },
@@ -69,6 +75,10 @@ export class PaymentService {
 
     if (!payment) {
       throw new NotFoundError('Payment record not found');
+    }
+
+    if (userRole !== Role.ADMIN && payment.booking.customerId !== userId) {
+      throw new ForbiddenError('You can only simulate payment for your own bookings');
     }
 
     if (payment.status === PaymentStatus.SUCCESS) {

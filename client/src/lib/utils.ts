@@ -14,9 +14,11 @@ export function formatCurrency(amount: number | string): string {
   }).format(num);
 }
 
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
+export function formatDate(dateInput: string | Date): string {
+  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+  if (!date || isNaN(date.getTime())) return String(dateInput);
   return date.toLocaleDateString('en-IN', {
+    timeZone: 'UTC',
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -24,10 +26,12 @@ export function formatDate(dateString: string): string {
   });
 }
 
-export function formatTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('en-IN', {
-    hour: '2-digit',
+export function formatTime(dateInput: string | Date): string {
+  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+  if (!date || isNaN(date.getTime())) return String(dateInput);
+  return date.toLocaleTimeString('en-US', {
+    timeZone: 'UTC',
+    hour: 'numeric',
     minute: '2-digit',
     hour12: true,
   });

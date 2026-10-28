@@ -15,6 +15,7 @@ export interface CreateBookingDTO {
   endTime: string;
   notes?: string;
   idempotencyKey?: string;
+  slotId?: string;
 }
 
 function generateBookingNumber(): string {
@@ -25,7 +26,11 @@ function generateBookingNumber(): string {
 
 export class BookingService {
   async createBooking(data: CreateBookingDTO) {
-    const { customerId, groundId, startTime, endTime, notes, idempotencyKey } = data;
+    const { customerId, groundId, startTime, endTime, notes, idempotencyKey, slotId } = data;
+
+    if (slotId && !slotId.includes(startTime)) {
+      throw new BadRequestError('Slot ID does not match the requested start time');
+    }
 
     // 1. Validate requested time interval
     const start = new Date(startTime);

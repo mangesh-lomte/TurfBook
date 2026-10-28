@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ApiError } from '../lib/api';
 import { Role } from '../types';
+import { FootballIcon, ArenaIcon } from '../components/SportIcon';
 import { Lock, Mail, User as UserIcon, Phone, ArrowRight, AlertCircle } from 'lucide-react';
 
 export const Register: React.FC = () => {
@@ -48,43 +49,45 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
+    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-dashboard relative overflow-hidden">
+      <div className="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-[#DFE6DF] shadow-elevated relative z-10">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-forest-900 text-turf flex items-center justify-center font-black text-xl mx-auto mb-3 shadow">
-            TB
+          <div className="w-14 h-14 rounded-2xl bg-gradient-brand border border-[#B9F65A]/40 text-white flex items-center justify-center font-black text-2xl mx-auto mb-4 shadow-brand">
+            <span>T</span><span className="text-[#B9F65A]">B</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#18231D] tracking-tight">
             Create an Account
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
+          </h1>
+          <p className="text-xs text-[#526158] mt-1 font-normal">
             Join TurfBook as a player or turf facility owner.
           </p>
         </div>
 
-        {/* Role Segmented Button */}
-        <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl">
+        {/* Role Segmented Button (Clean Vector Icons) */}
+        <div className="grid grid-cols-2 p-1.5 bg-[#F8FAF7] border border-[#DFE6DF] rounded-2xl">
           <button
             type="button"
             onClick={() => setRole('CUSTOMER')}
-            className={`py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               role === 'CUSTOMER'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-900'
+                ? 'bg-gradient-booking text-[#18231D] shadow-lime-sm font-black'
+                : 'text-[#526158] hover:text-[#18231D]'
             }`}
           >
-            ⚽ Sports Player
+            <FootballIcon className="w-3.5 h-3.5 text-current" />
+            <span>Sports Player</span>
           </button>
           <button
             type="button"
             onClick={() => setRole('OWNER')}
-            className={`py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               role === 'OWNER'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-900'
+                ? 'bg-[#123B2A] text-white shadow-brand font-black'
+                : 'text-[#526158] hover:text-[#18231D]'
             }`}
           >
-            🏟️ Turf Owner
+            <ArenaIcon className="w-3.5 h-3.5 text-current" />
+            <span>Turf Owner</span>
           </button>
         </div>
 
@@ -95,70 +98,75 @@ export const Register: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-              Full Name
+            <label htmlFor="reg-name" className="block text-xs font-bold text-[#18231D] uppercase tracking-wider mb-1.5">
+              Full Legal Name
             </label>
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
-              <UserIcon className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#F8FAF7] border border-[#DFE6DF] rounded-xl focus-within:ring-2 focus-within:ring-[#176443]">
+              <UserIcon className="w-4 h-4 text-[#526158] shrink-0" />
               <input
+                id="reg-name"
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Rohan Gupta"
-                className="w-full bg-transparent text-sm text-slate-800 focus:outline-none placeholder:text-slate-400"
+                placeholder="Rohan Sharma"
+                className="w-full bg-transparent text-xs text-[#18231D] focus:outline-none font-medium placeholder:text-[#526158]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+            <label htmlFor="reg-email" className="block text-xs font-bold text-[#18231D] uppercase tracking-wider mb-1.5">
               Email Address
             </label>
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
-              <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#F8FAF7] border border-[#DFE6DF] rounded-xl focus-within:ring-2 focus-within:ring-[#176443]">
+              <Mail className="w-4 h-4 text-[#526158] shrink-0" />
               <input
+                id="reg-email"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="rohan@example.com"
-                className="w-full bg-transparent text-sm text-slate-800 focus:outline-none placeholder:text-slate-400"
+                placeholder="player@example.com"
+                className="w-full bg-transparent text-xs text-[#18231D] focus:outline-none font-medium placeholder:text-[#526158]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+            <label htmlFor="reg-phone" className="block text-xs font-bold text-[#18231D] uppercase tracking-wider mb-1.5">
               Phone Number
             </label>
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
-              <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#F8FAF7] border border-[#DFE6DF] rounded-xl focus-within:ring-2 focus-within:ring-[#176443]">
+              <Phone className="w-4 h-4 text-[#526158] shrink-0" />
               <input
+                id="reg-phone"
                 type="tel"
+                required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+91 9876543210"
-                className="w-full bg-transparent text-sm text-slate-800 focus:outline-none placeholder:text-slate-400"
+                placeholder="+91 98765 43210"
+                className="w-full bg-transparent text-xs text-[#18231D] focus:outline-none font-medium placeholder:text-[#526158]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-              Password (Min 8 chars, 1 uppercase, 1 number)
+            <label htmlFor="reg-password" className="block text-xs font-bold text-[#18231D] uppercase tracking-wider mb-1.5">
+              Password
             </label>
-            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
-              <Lock className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#F8FAF7] border border-[#DFE6DF] rounded-xl focus-within:ring-2 focus-within:ring-[#176443]">
+              <Lock className="w-4 h-4 text-[#526158] shrink-0" />
               <input
+                id="reg-password"
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-transparent text-sm text-slate-800 focus:outline-none placeholder:text-slate-400"
+                className="w-full bg-transparent text-xs text-[#18231D] focus:outline-none font-medium placeholder:text-[#526158]"
               />
             </div>
           </div>
@@ -166,16 +174,23 @@ export const Register: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 py-3 bg-forest-900 hover:bg-forest-800 text-turf-bright font-bold text-sm rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#123B2A] hover:bg-[#176443] text-white font-bold text-xs rounded-xl shadow-brand transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            {loading ? <span>Creating Account...</span> : <span>Complete Registration</span>}
+            {loading ? (
+              <span>Registering Account...</span>
+            ) : (
+              <>
+                <span>Create Verified Account</span>
+                <ArrowRight className="w-4 h-4 text-[#B9F65A]" />
+              </>
+            )}
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-500">
-          Already registered?{' '}
-          <Link to="/login" className="font-bold text-emerald-700 hover:underline">
-            Sign In
+        <div className="text-center pt-2 border-t border-[#DFE6DF]">
+          <span className="text-xs text-[#526158]">Already have an account? </span>
+          <Link to="/login" className="text-xs font-bold text-[#123B2A] hover:underline">
+            Sign in
           </Link>
         </div>
       </div>

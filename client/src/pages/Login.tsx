@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ApiError } from '../lib/api';
-import { Lock, Mail, Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
+import { FootballIcon, ArenaIcon } from '../components/SportIcon';
+import { Lock, Mail, Sparkles, ArrowRight, AlertCircle, Shield } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { login, demoLogin } = useAuth();
@@ -50,53 +51,58 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
-        {/* Header */}
+    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-dashboard relative overflow-hidden">
+      <div className="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-[#DFE6DF] shadow-elevated relative z-10">
+        {/* Header - No kickers */}
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-forest-900 text-turf flex items-center justify-center font-black text-xl mx-auto mb-3 shadow">
-            TB
+          <div className="w-14 h-14 rounded-2xl bg-gradient-brand border border-[#B9F65A]/40 text-white flex items-center justify-center font-black text-2xl mx-auto mb-4 shadow-brand">
+            <span>T</span><span className="text-[#B9F65A]">B</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Welcome to TurfBook
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Sign in to manage bookings, venues, and reservations.
+          <h1 className="text-2xl sm:text-3xl font-black text-[#18231D] tracking-tight">
+            Sign In to TurfBook
+          </h1>
+          <p className="text-xs text-[#526158] mt-1 font-normal">
+            Access your bookings, explore verified arenas, and manage sports grounds.
           </p>
         </div>
 
-        {/* 1-Click Demo Login Box (For Reviewers & Evaluators) */}
-        <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Instant Demo Sign-in (1-Click)</span>
+        {/* 1-Click Demo Login Box (Vector Icons) */}
+        <div className="bg-[#F0F6EE] border border-[#C5E1BF] rounded-2xl p-4 shadow-xs">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-[#123B2A] uppercase tracking-wider mb-2.5">
+            <Sparkles className="w-4 h-4 text-[#27864F]" />
+            <span>1-Click Instant Persona Sign-In</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
+              disabled={loading}
               onClick={() => handleQuickDemo('CUSTOMER')}
-              className="py-2 px-1 bg-white hover:bg-emerald-100/60 border border-emerald-300 rounded-xl text-xs font-bold text-slate-800 transition-colors shadow-xs"
+              className="py-2.5 px-2 bg-white hover:bg-[#F8FAF7] border border-[#DFE6DF] hover:border-[#123B2A] rounded-xl text-xs font-bold text-[#18231D] transition-all shadow-xs active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              ⚽ Customer
+              <FootballIcon className="w-3.5 h-3.5 text-[#27864F]" />
+              <span>Player</span>
             </button>
             <button
               type="button"
+              disabled={loading}
               onClick={() => handleQuickDemo('OWNER')}
-              className="py-2 px-1 bg-white hover:bg-emerald-100/60 border border-emerald-300 rounded-xl text-xs font-bold text-slate-800 transition-colors shadow-xs"
+              className="py-2.5 px-2 bg-white hover:bg-[#F8FAF7] border border-[#DFE6DF] hover:border-[#123B2A] rounded-xl text-xs font-bold text-[#18231D] transition-all shadow-xs active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              🏟️ Owner
+              <ArenaIcon className="w-3.5 h-3.5 text-[#27864F]" />
+              <span>Owner</span>
             </button>
             <button
               type="button"
+              disabled={loading}
               onClick={() => handleQuickDemo('ADMIN')}
-              className="py-2 px-1 bg-white hover:bg-emerald-100/60 border border-emerald-300 rounded-xl text-xs font-bold text-slate-800 transition-colors shadow-xs"
+              className="py-2.5 px-2 bg-white hover:bg-[#F8FAF7] border border-[#DFE6DF] hover:border-[#123B2A] rounded-xl text-xs font-bold text-[#18231D] transition-all shadow-xs active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              🛡️ Admin
+              <Shield className="w-3.5 h-3.5 text-[#27864F]" />
+              <span>Admin</span>
             </button>
           </div>
         </div>
 
-        {/* Error Alert */}
         {error && (
           <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -104,38 +110,39 @@ export const Login: React.FC = () => {
           </div>
         )}
 
-        {/* Standard Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+            <label htmlFor="login-email" className="block text-xs font-bold text-[#18231D] uppercase tracking-wider mb-1.5">
               Email Address
             </label>
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-emerald-500">
-              <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#F8FAF7] border border-[#DFE6DF] rounded-xl focus-within:ring-2 focus-within:ring-[#176443]">
+              <Mail className="w-4 h-4 text-[#526158] shrink-0" />
               <input
+                id="login-email"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full bg-transparent text-sm text-slate-800 focus:outline-none placeholder:text-slate-400"
+                placeholder="player@example.com"
+                className="w-full bg-transparent text-xs text-[#18231D] focus:outline-none font-medium placeholder:text-[#526158]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+            <label htmlFor="login-password" className="block text-xs font-bold text-[#18231D] uppercase tracking-wider mb-1.5">
               Password
             </label>
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-emerald-500">
-              <Lock className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#F8FAF7] border border-[#DFE6DF] rounded-xl focus-within:ring-2 focus-within:ring-[#176443]">
+              <Lock className="w-4 h-4 text-[#526158] shrink-0" />
               <input
+                id="login-password"
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-transparent text-sm text-slate-800 focus:outline-none placeholder:text-slate-400"
+                className="w-full bg-transparent text-xs text-[#18231D] focus:outline-none font-medium placeholder:text-[#526158]"
               />
             </div>
           </div>
@@ -143,23 +150,23 @@ export const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-forest-900 hover:bg-forest-800 text-turf-bright font-bold text-sm rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#123B2A] hover:bg-[#176443] text-white font-bold text-xs rounded-xl shadow-brand transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {loading ? (
-              <span>Signing In...</span>
+              <span>Authenticating...</span>
             ) : (
               <>
-                <span>Sign In</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Sign In to Account</span>
+                <ArrowRight className="w-4 h-4 text-[#B9F65A]" />
               </>
             )}
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-500">
-          Don't have an account?{' '}
-          <Link to="/register" className="font-bold text-emerald-700 hover:underline">
-            Register here
+        <div className="text-center pt-2 border-t border-[#DFE6DF]">
+          <span className="text-xs text-[#526158]">Don't have an account yet? </span>
+          <Link to="/register" className="text-xs font-bold text-[#123B2A] hover:underline">
+            Register now
           </Link>
         </div>
       </div>

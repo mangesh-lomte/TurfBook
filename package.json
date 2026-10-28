@@ -12,7 +12,11 @@
     "build": "npm run build:server && npm run build:client",
     "test": "npm --prefix server run test",
     "seed": "npm --prefix server run prisma:seed",
-    "migrate": "npm --prefix server run prisma:migrate"
+    "migrate": "npm --prefix server run prisma:migrate",
+    "db:start": "powershell -Command \"& 'C:\\Users\\mange\\AppData\\Local\\Programs\\PostgreSQL\\pgsql\\bin\\pg_ctl.exe' start -D 'C:\\Users\\mange\\AppData\\Local\\Programs\\PostgreSQL\\data' -l 'C:\\Users\\mange\\AppData\\Local\\Programs\\PostgreSQL\\logfile.log'\"",
+    "py:dev": "python_service\\venv\\Scripts\\python.exe -m uvicorn app.main:app --app-dir python_service --port 8000 --reload",
+    "py:test": "python_service\\venv\\Scripts\\python.exe -m pytest python_service/tests -v",
+    "py:logs": "python_service\\venv\\Scripts\\python.exe python_service/scripts/analyze_logs.py"
   },
   "keywords": [
     "turf-booking",

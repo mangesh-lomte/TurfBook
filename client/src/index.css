@@ -2,37 +2,170 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Official Brand Colors */
+  --color-brand: #123B2A;
+  --color-brand-dark: #0B241A;
+  --color-brand-deep: #07150F;
+  --color-brand-emerald: #176443;
+  --color-accent: #B9F65A;
+  --color-accent-light: #D4FF85;
+  --color-background: #F8FAF7;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #18231D;
+  --color-text-secondary: #526158;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-on-dark-secondary: #D5E2D8;
+  --color-border: #DFE6DF;
+  --color-success: #21864A;
+  --color-error: #D64545;
+
+  /* Official Design Gradients */
+  --gradient-hero: radial-gradient(ellipse at 80% 25%, rgba(185, 246, 90, 0.13), transparent 38%), linear-gradient(135deg, #F8FAF7 0%, #EDF5EC 55%, #E2F0DF 100%);
+  --gradient-brand: linear-gradient(135deg, #123B2A 0%, #176443 55%, #27864F 100%);
+  --gradient-booking: linear-gradient(135deg, #D4FF85 0%, #B9F65A 50%, #96E83F 100%);
+  --gradient-arena: radial-gradient(ellipse at 50% 0%, #214D35 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, #173E2B 0%, transparent 50%), linear-gradient(145deg, #10271B 0%, #07150F 55%, #030A06 100%);
+  --gradient-dark-content: linear-gradient(135deg, #0B241A 0%, #123B2A 50%, #194B32 100%);
+  --gradient-venue-card: linear-gradient(145deg, #FFFFFF 0%, #F6FAF2 100%);
+  --gradient-dashboard: linear-gradient(135deg, #F8FAF7 0%, #F0F6EE 100%);
+}
+
 @layer base {
   body {
-    @apply bg-[#f8fafc] text-charcoal-900;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    caret-color: #123B2A;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+    letter-spacing: -0.025em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: #B9F65A;
+    color: #18231D;
+  }
+
+  /* Accessible focus states */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #176443;
   }
 }
 
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #F0F6EE;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #C5E1BF;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #27864F;
 }
 
-/* Subtle glassmorphism utilities */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* Gradient Utility Classes */
+.bg-gradient-hero {
+  background: var(--gradient-hero);
 }
 
-.dark-glass {
-  background: rgba(12, 36, 25, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.bg-gradient-brand {
+  background: var(--gradient-brand);
+}
+
+.bg-gradient-booking {
+  background: var(--gradient-booking);
+}
+
+.bg-gradient-arena {
+  background: var(--gradient-arena);
+}
+
+.bg-gradient-dark-content {
+  background: var(--gradient-dark-content);
+}
+
+.bg-gradient-venue-card {
+  background: var(--gradient-venue-card);
+}
+
+.bg-gradient-dashboard {
+  background: var(--gradient-dashboard);
+}
+
+/* Surfaces & Cards */
+.venue-card-surface {
+  background: var(--gradient-venue-card);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 12px -2px rgba(18, 59, 42, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.venue-card-surface:hover {
+  border-color: rgba(39, 134, 79, 0.4);
+  box-shadow: 0 12px 28px -4px rgba(18, 59, 42, 0.12);
+  transform: translateY(-2px);
+}
+
+.dashboard-card-surface {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 10px -2px rgba(18, 59, 42, 0.06);
+}
+
+.dark-section {
+  background: var(--gradient-dark-content);
+  color: var(--color-text-on-dark);
+}
+
+.dark-section h1,
+.dark-section h2,
+.dark-section h3,
+.dark-section h4 {
+  color: var(--color-text-on-dark);
+}
+
+.dark-section p {
+  color: var(--color-text-on-dark-secondary);
+}
+
+/* Restrained lime badge / glow */
+.lime-badge {
+  background-color: rgba(185, 246, 90, 0.16);
+  color: #123B2A;
+  border: 1px solid rgba(185, 246, 90, 0.4);
+}
+
+.lime-glow-border {
+  border-color: rgba(185, 246, 90, 0.4);
+  box-shadow: 0 0 16px -2px rgba(185, 246, 90, 0.25);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
